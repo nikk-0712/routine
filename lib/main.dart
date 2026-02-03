@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/router/app_router.dart';
+
 void main() {
   runApp(
     const ProviderScope(
@@ -14,7 +16,7 @@ class RoutineAssistantApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Routine Assistant',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -23,33 +25,29 @@ class RoutineAssistantApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
-      ),
-      home: const HomeScreen(),
-    );
-  }
-}
-
-class HomeScreen extends ConsumerWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF020004),
-      appBar: AppBar(
-        title: const Text('Routine Assistant'),
-        backgroundColor: const Color(0xFF34195B),
-      ),
-      body: const Center(
-        child: Text(
-          'Welcome to Routine Assistant',
-          style: TextStyle(
-            color: Color(0xFF9F3BDB),
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+        scaffoldBackgroundColor: const Color(0xFF020004),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF34195B),
+          foregroundColor: Colors.white,
+        ),
+        navigationBarTheme: NavigationBarThemeData(
+          backgroundColor: const Color(0xFF34195B),
+          indicatorColor: const Color(0xFF540CC3),
+          iconTheme: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const IconThemeData(color: Colors.white);
+            }
+            return const IconThemeData(color: Color(0xFFA7A1AB));
+          }),
+          labelTextStyle: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const TextStyle(color: Colors.white, fontSize: 12);
+            }
+            return const TextStyle(color: Color(0xFFA7A1AB), fontSize: 12);
+          }),
         ),
       ),
+      routerConfig: appRouter,
     );
   }
 }

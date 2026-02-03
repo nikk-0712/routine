@@ -14,7 +14,7 @@
 
 ### 1.2 Project Structure
 - [x] Initialize Flutter project with proper folder structure
-- [ ] Configure state management (Riverpod or Bloc)
+- [x] Configure state management (Riverpod or Bloc)
 - [ ] Set up GoRouter for navigation
 - [ ] Create base theming system (dark-first with neon accents)
 - [ ] Define color palette: Dark (#020004, #34195B), Neon (#540CC3, #9F3BDB), Neutrals (#F7F7F8, #A7A1AB)
