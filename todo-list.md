@@ -7,13 +7,13 @@
 ## 1. Project Setup & Foundation
 
 ### 1.1 Development Environment
-- [ ] Install Flutter SDK and configure for all target platforms
+- [x] Install Flutter SDK and configure for all target platforms
 - [ ] Set up IDE (VS Code / Android Studio) with Flutter plugins
-- [ ] Configure Git repository and branching strategy
+- [x] Configure Git repository and branching strategy
 - [ ] Set up CI/CD pipeline (GitHub Actions free tier)
 
 ### 1.2 Project Structure
-- [ ] Initialize Flutter project with proper folder structure
+- [x] Initialize Flutter project with proper folder structure
 - [ ] Configure state management (Riverpod or Bloc)
 - [ ] Set up GoRouter for navigation
 - [ ] Create base theming system (dark-first with neon accents)
