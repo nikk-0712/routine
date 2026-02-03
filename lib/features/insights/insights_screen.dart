@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_typography.dart';
+
 /// Insights screen - AI-powered analytics and pattern recognition
 class InsightsScreen extends ConsumerWidget {
   const InsightsScreen({super.key});
@@ -8,18 +11,26 @@ class InsightsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: const Color(0xFF020004),
-      appBar: AppBar(
-        title: const Text('Insights'),
-        backgroundColor: const Color(0xFF34195B),
-      ),
-      body: const Center(
-        child: Text(
-          'AI Insights',
-          style: TextStyle(
-            color: Color(0xFF9F3BDB),
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'AI Insights',
+                style: AppTypography.headlineLarge.copyWith(
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Pattern analysis and recommendations',
+                style: AppTypography.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
           ),
         ),
       ),
