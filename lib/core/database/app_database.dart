@@ -6,16 +6,31 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 import 'tables/tasks_table.dart';
+import 'tables/water_intakes_table.dart';
 
 part 'app_database.g.dart';
 
 /// Main application database
-@DriftDatabase(tables: [Tasks])
+@DriftDatabase(tables: [Tasks, WaterIntakes])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onCreate: (Migrator m) async {
+        await m.createAll();
+      },
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (from < 2) {
+          await m.createTable(waterIntakes);
+        }
+      },
+    );
+  }
 
   // ===== Task Operations =====
 
@@ -140,6 +155,55 @@ class AppDatabase extends _$AppDatabase {
     
     final result = await query.getSingle();
     return result.read(count) ?? 0;
+  }
+
+  // ===== Water Intake Operations =====
+
+  /// Log water intake
+  Future<int> logWaterIntake(int amountMl, {String? note}) {
+    return into(waterIntakes).insert(WaterIntakesCompanion.insert(
+      amountMl: amountMl,
+      note: Value(note),
+    ));
+  }
+
+  /// Get today's water intake logs
+  Future<List<WaterIntake>> getTodaysWaterIntakes() {
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
+
+    return (select(waterIntakes)
+          ..where((w) =>
+              w.loggedAt.isBiggerOrEqualValue(startOfDay) &
+              w.loggedAt.isSmallerThanValue(endOfDay))
+          ..orderBy([(w) => OrderingTerm.desc(w.loggedAt)]))
+        .get();
+  }
+
+  /// Get total ml consumed today
+  Future<int> getTodaysTotalWaterMl() async {
+    final intakes = await getTodaysWaterIntakes();
+    return intakes.fold<int>(0, (sum, intake) => sum + intake.amountMl);
+  }
+
+  /// Watch today's total water intake
+  Stream<int> watchTodaysTotalWaterMl() {
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
+
+    return (select(waterIntakes)
+          ..where((w) =>
+              w.loggedAt.isBiggerOrEqualValue(startOfDay) &
+              w.loggedAt.isSmallerThanValue(endOfDay)))
+        .watch()
+        .map((intakes) => intakes.fold<int>(0, (sum, i) => sum + i.amountMl));
+  }
+
+  /// Delete a water intake log
+  Future<int> deleteWaterIntake(int id) {
+    return (delete(waterIntakes)..where((w) => w.id.equals(id))).go();
   }
 }
 

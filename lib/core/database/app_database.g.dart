@@ -1000,15 +1000,311 @@ class TasksCompanion extends UpdateCompanion<Task> {
   }
 }
 
+class $WaterIntakesTable extends WaterIntakes
+    with TableInfo<$WaterIntakesTable, WaterIntake> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WaterIntakesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _amountMlMeta = const VerificationMeta(
+    'amountMl',
+  );
+  @override
+  late final GeneratedColumn<int> amountMl = GeneratedColumn<int>(
+    'amount_ml',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _loggedAtMeta = const VerificationMeta(
+    'loggedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> loggedAt = GeneratedColumn<DateTime>(
+    'logged_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, amountMl, loggedAt, note];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'water_intakes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WaterIntake> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('amount_ml')) {
+      context.handle(
+        _amountMlMeta,
+        amountMl.isAcceptableOrUnknown(data['amount_ml']!, _amountMlMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMlMeta);
+    }
+    if (data.containsKey('logged_at')) {
+      context.handle(
+        _loggedAtMeta,
+        loggedAt.isAcceptableOrUnknown(data['logged_at']!, _loggedAtMeta),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WaterIntake map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WaterIntake(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      amountMl: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_ml'],
+      )!,
+      loggedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}logged_at'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+    );
+  }
+
+  @override
+  $WaterIntakesTable createAlias(String alias) {
+    return $WaterIntakesTable(attachedDatabase, alias);
+  }
+}
+
+class WaterIntake extends DataClass implements Insertable<WaterIntake> {
+  final int id;
+  final int amountMl;
+  final DateTime loggedAt;
+  final String? note;
+  const WaterIntake({
+    required this.id,
+    required this.amountMl,
+    required this.loggedAt,
+    this.note,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['amount_ml'] = Variable<int>(amountMl);
+    map['logged_at'] = Variable<DateTime>(loggedAt);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    return map;
+  }
+
+  WaterIntakesCompanion toCompanion(bool nullToAbsent) {
+    return WaterIntakesCompanion(
+      id: Value(id),
+      amountMl: Value(amountMl),
+      loggedAt: Value(loggedAt),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+    );
+  }
+
+  factory WaterIntake.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WaterIntake(
+      id: serializer.fromJson<int>(json['id']),
+      amountMl: serializer.fromJson<int>(json['amountMl']),
+      loggedAt: serializer.fromJson<DateTime>(json['loggedAt']),
+      note: serializer.fromJson<String?>(json['note']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'amountMl': serializer.toJson<int>(amountMl),
+      'loggedAt': serializer.toJson<DateTime>(loggedAt),
+      'note': serializer.toJson<String?>(note),
+    };
+  }
+
+  WaterIntake copyWith({
+    int? id,
+    int? amountMl,
+    DateTime? loggedAt,
+    Value<String?> note = const Value.absent(),
+  }) => WaterIntake(
+    id: id ?? this.id,
+    amountMl: amountMl ?? this.amountMl,
+    loggedAt: loggedAt ?? this.loggedAt,
+    note: note.present ? note.value : this.note,
+  );
+  WaterIntake copyWithCompanion(WaterIntakesCompanion data) {
+    return WaterIntake(
+      id: data.id.present ? data.id.value : this.id,
+      amountMl: data.amountMl.present ? data.amountMl.value : this.amountMl,
+      loggedAt: data.loggedAt.present ? data.loggedAt.value : this.loggedAt,
+      note: data.note.present ? data.note.value : this.note,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WaterIntake(')
+          ..write('id: $id, ')
+          ..write('amountMl: $amountMl, ')
+          ..write('loggedAt: $loggedAt, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, amountMl, loggedAt, note);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WaterIntake &&
+          other.id == this.id &&
+          other.amountMl == this.amountMl &&
+          other.loggedAt == this.loggedAt &&
+          other.note == this.note);
+}
+
+class WaterIntakesCompanion extends UpdateCompanion<WaterIntake> {
+  final Value<int> id;
+  final Value<int> amountMl;
+  final Value<DateTime> loggedAt;
+  final Value<String?> note;
+  const WaterIntakesCompanion({
+    this.id = const Value.absent(),
+    this.amountMl = const Value.absent(),
+    this.loggedAt = const Value.absent(),
+    this.note = const Value.absent(),
+  });
+  WaterIntakesCompanion.insert({
+    this.id = const Value.absent(),
+    required int amountMl,
+    this.loggedAt = const Value.absent(),
+    this.note = const Value.absent(),
+  }) : amountMl = Value(amountMl);
+  static Insertable<WaterIntake> custom({
+    Expression<int>? id,
+    Expression<int>? amountMl,
+    Expression<DateTime>? loggedAt,
+    Expression<String>? note,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (amountMl != null) 'amount_ml': amountMl,
+      if (loggedAt != null) 'logged_at': loggedAt,
+      if (note != null) 'note': note,
+    });
+  }
+
+  WaterIntakesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? amountMl,
+    Value<DateTime>? loggedAt,
+    Value<String?>? note,
+  }) {
+    return WaterIntakesCompanion(
+      id: id ?? this.id,
+      amountMl: amountMl ?? this.amountMl,
+      loggedAt: loggedAt ?? this.loggedAt,
+      note: note ?? this.note,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (amountMl.present) {
+      map['amount_ml'] = Variable<int>(amountMl.value);
+    }
+    if (loggedAt.present) {
+      map['logged_at'] = Variable<DateTime>(loggedAt.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WaterIntakesCompanion(')
+          ..write('id: $id, ')
+          ..write('amountMl: $amountMl, ')
+          ..write('loggedAt: $loggedAt, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $TasksTable tasks = $TasksTable(this);
+  late final $WaterIntakesTable waterIntakes = $WaterIntakesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [tasks];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [tasks, waterIntakes];
 }
 
 typedef $$TasksTableCreateCompanionBuilder =
@@ -1452,10 +1748,187 @@ typedef $$TasksTableProcessedTableManager =
       Task,
       PrefetchHooks Function()
     >;
+typedef $$WaterIntakesTableCreateCompanionBuilder =
+    WaterIntakesCompanion Function({
+      Value<int> id,
+      required int amountMl,
+      Value<DateTime> loggedAt,
+      Value<String?> note,
+    });
+typedef $$WaterIntakesTableUpdateCompanionBuilder =
+    WaterIntakesCompanion Function({
+      Value<int> id,
+      Value<int> amountMl,
+      Value<DateTime> loggedAt,
+      Value<String?> note,
+    });
+
+class $$WaterIntakesTableFilterComposer
+    extends Composer<_$AppDatabase, $WaterIntakesTable> {
+  $$WaterIntakesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountMl => $composableBuilder(
+    column: $table.amountMl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get loggedAt => $composableBuilder(
+    column: $table.loggedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WaterIntakesTableOrderingComposer
+    extends Composer<_$AppDatabase, $WaterIntakesTable> {
+  $$WaterIntakesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountMl => $composableBuilder(
+    column: $table.amountMl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get loggedAt => $composableBuilder(
+    column: $table.loggedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WaterIntakesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WaterIntakesTable> {
+  $$WaterIntakesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get amountMl =>
+      $composableBuilder(column: $table.amountMl, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get loggedAt =>
+      $composableBuilder(column: $table.loggedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+}
+
+class $$WaterIntakesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WaterIntakesTable,
+          WaterIntake,
+          $$WaterIntakesTableFilterComposer,
+          $$WaterIntakesTableOrderingComposer,
+          $$WaterIntakesTableAnnotationComposer,
+          $$WaterIntakesTableCreateCompanionBuilder,
+          $$WaterIntakesTableUpdateCompanionBuilder,
+          (
+            WaterIntake,
+            BaseReferences<_$AppDatabase, $WaterIntakesTable, WaterIntake>,
+          ),
+          WaterIntake,
+          PrefetchHooks Function()
+        > {
+  $$WaterIntakesTableTableManager(_$AppDatabase db, $WaterIntakesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WaterIntakesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WaterIntakesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WaterIntakesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> amountMl = const Value.absent(),
+                Value<DateTime> loggedAt = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+              }) => WaterIntakesCompanion(
+                id: id,
+                amountMl: amountMl,
+                loggedAt: loggedAt,
+                note: note,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int amountMl,
+                Value<DateTime> loggedAt = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+              }) => WaterIntakesCompanion.insert(
+                id: id,
+                amountMl: amountMl,
+                loggedAt: loggedAt,
+                note: note,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WaterIntakesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WaterIntakesTable,
+      WaterIntake,
+      $$WaterIntakesTableFilterComposer,
+      $$WaterIntakesTableOrderingComposer,
+      $$WaterIntakesTableAnnotationComposer,
+      $$WaterIntakesTableCreateCompanionBuilder,
+      $$WaterIntakesTableUpdateCompanionBuilder,
+      (
+        WaterIntake,
+        BaseReferences<_$AppDatabase, $WaterIntakesTable, WaterIntake>,
+      ),
+      WaterIntake,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$TasksTableTableManager get tasks =>
       $$TasksTableTableManager(_db, _db.tasks);
+  $$WaterIntakesTableTableManager get waterIntakes =>
+      $$WaterIntakesTableTableManager(_db, _db.waterIntakes);
 }
