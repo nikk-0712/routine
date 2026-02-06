@@ -16,9 +16,9 @@
 - [x] Initialize Flutter project with proper folder structure
 - [x] Configure state management (Riverpod or Bloc)
 - [x] Set up GoRouter for navigation
-- [ ] Create base theming system (dark-first with neon accents)
-- [ ] Define color palette: Dark (#020004, #34195B), Neon (#540CC3, #9F3BDB), Neutrals (#F7F7F8, #A7A1AB)
-- [ ] Set up typography with Inter/SF Pro equivalent font
+- [x] Create base theming system (dark-first with neon accents)
+- [x] Define color palette: Dark (#020004, #34195B), Neon (#540CC3, #9F3BDB), Neutrals (#F7F7F8, #A7A1AB)
+- [x] Set up typography with Inter/SF Pro equivalent font
 
 ### 1.3 Backend Setup (Supabase)
 - [ ] Create Supabase project
@@ -29,7 +29,7 @@
 - [ ] Test realtime sync functionality
 
 ### 1.4 Local Storage Setup
-- [ ] Integrate SQLite via Drift or Isar for structured data
+- [x] Integrate SQLite via Drift or Isar for structured data
 - [ ] Set up Hive for key-value caching
 - [ ] Implement offline queue system for deferred sync
 

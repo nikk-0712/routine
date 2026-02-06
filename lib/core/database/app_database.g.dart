@@ -1,0 +1,1461 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'app_database.dart';
+
+// ignore_for_file: type=lint
+class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TasksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 200,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('Personal'),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<TaskPriority, int> priority =
+      GeneratedColumn<int>(
+        'priority',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(1),
+      ).withConverter<TaskPriority>($TasksTable.$converterpriority);
+  @override
+  late final GeneratedColumnWithTypeConverter<TaskStatus, int> status =
+      GeneratedColumn<int>(
+        'status',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0),
+      ).withConverter<TaskStatus>($TasksTable.$converterstatus);
+  static const VerificationMeta _dueDateMeta = const VerificationMeta(
+    'dueDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dueDate = GeneratedColumn<DateTime>(
+    'due_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _scheduledStartMeta = const VerificationMeta(
+    'scheduledStart',
+  );
+  @override
+  late final GeneratedColumn<DateTime> scheduledStart =
+      GeneratedColumn<DateTime>(
+        'scheduled_start',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _scheduledEndMeta = const VerificationMeta(
+    'scheduledEnd',
+  );
+  @override
+  late final GeneratedColumn<DateTime> scheduledEnd = GeneratedColumn<DateTime>(
+    'scheduled_end',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _estimatedMinutesMeta = const VerificationMeta(
+    'estimatedMinutes',
+  );
+  @override
+  late final GeneratedColumn<int> estimatedMinutes = GeneratedColumn<int>(
+    'estimated_minutes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<RecurrenceType, int>
+  recurrenceType = GeneratedColumn<int>(
+    'recurrence_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  ).withConverter<RecurrenceType>($TasksTable.$converterrecurrenceType);
+  static const VerificationMeta _recurrenceIntervalMeta =
+      const VerificationMeta('recurrenceInterval');
+  @override
+  late final GeneratedColumn<int> recurrenceInterval = GeneratedColumn<int>(
+    'recurrence_interval',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _parentTaskIdMeta = const VerificationMeta(
+    'parentTaskId',
+  );
+  @override
+  late final GeneratedColumn<String> parentTaskId = GeneratedColumn<String>(
+    'parent_task_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _completedAtMeta = const VerificationMeta(
+    'completedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> completedAt = GeneratedColumn<DateTime>(
+    'completed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    title,
+    description,
+    category,
+    priority,
+    status,
+    dueDate,
+    scheduledStart,
+    scheduledEnd,
+    estimatedMinutes,
+    recurrenceType,
+    recurrenceInterval,
+    parentTaskId,
+    createdAt,
+    updatedAt,
+    completedAt,
+    isDeleted,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tasks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Task> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    }
+    if (data.containsKey('due_date')) {
+      context.handle(
+        _dueDateMeta,
+        dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta),
+      );
+    }
+    if (data.containsKey('scheduled_start')) {
+      context.handle(
+        _scheduledStartMeta,
+        scheduledStart.isAcceptableOrUnknown(
+          data['scheduled_start']!,
+          _scheduledStartMeta,
+        ),
+      );
+    }
+    if (data.containsKey('scheduled_end')) {
+      context.handle(
+        _scheduledEndMeta,
+        scheduledEnd.isAcceptableOrUnknown(
+          data['scheduled_end']!,
+          _scheduledEndMeta,
+        ),
+      );
+    }
+    if (data.containsKey('estimated_minutes')) {
+      context.handle(
+        _estimatedMinutesMeta,
+        estimatedMinutes.isAcceptableOrUnknown(
+          data['estimated_minutes']!,
+          _estimatedMinutesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('recurrence_interval')) {
+      context.handle(
+        _recurrenceIntervalMeta,
+        recurrenceInterval.isAcceptableOrUnknown(
+          data['recurrence_interval']!,
+          _recurrenceIntervalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('parent_task_id')) {
+      context.handle(
+        _parentTaskIdMeta,
+        parentTaskId.isAcceptableOrUnknown(
+          data['parent_task_id']!,
+          _parentTaskIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(
+        _completedAtMeta,
+        completedAt.isAcceptableOrUnknown(
+          data['completed_at']!,
+          _completedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Task map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Task(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      priority: $TasksTable.$converterpriority.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}priority'],
+        )!,
+      ),
+      status: $TasksTable.$converterstatus.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}status'],
+        )!,
+      ),
+      dueDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}due_date'],
+      ),
+      scheduledStart: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}scheduled_start'],
+      ),
+      scheduledEnd: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}scheduled_end'],
+      ),
+      estimatedMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}estimated_minutes'],
+      ),
+      recurrenceType: $TasksTable.$converterrecurrenceType.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}recurrence_type'],
+        )!,
+      ),
+      recurrenceInterval: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}recurrence_interval'],
+      )!,
+      parentTaskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parent_task_id'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      completedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}completed_at'],
+      ),
+      isDeleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_deleted'],
+      )!,
+    );
+  }
+
+  @override
+  $TasksTable createAlias(String alias) {
+    return $TasksTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<TaskPriority, int, int> $converterpriority =
+      const EnumIndexConverter<TaskPriority>(TaskPriority.values);
+  static JsonTypeConverter2<TaskStatus, int, int> $converterstatus =
+      const EnumIndexConverter<TaskStatus>(TaskStatus.values);
+  static JsonTypeConverter2<RecurrenceType, int, int> $converterrecurrenceType =
+      const EnumIndexConverter<RecurrenceType>(RecurrenceType.values);
+}
+
+class Task extends DataClass implements Insertable<Task> {
+  final String id;
+  final String title;
+  final String? description;
+  final String category;
+  final TaskPriority priority;
+  final TaskStatus status;
+  final DateTime? dueDate;
+  final DateTime? scheduledStart;
+  final DateTime? scheduledEnd;
+  final int? estimatedMinutes;
+  final RecurrenceType recurrenceType;
+  final int recurrenceInterval;
+  final String? parentTaskId;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? completedAt;
+  final bool isDeleted;
+  const Task({
+    required this.id,
+    required this.title,
+    this.description,
+    required this.category,
+    required this.priority,
+    required this.status,
+    this.dueDate,
+    this.scheduledStart,
+    this.scheduledEnd,
+    this.estimatedMinutes,
+    required this.recurrenceType,
+    required this.recurrenceInterval,
+    this.parentTaskId,
+    required this.createdAt,
+    required this.updatedAt,
+    this.completedAt,
+    required this.isDeleted,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['category'] = Variable<String>(category);
+    {
+      map['priority'] = Variable<int>(
+        $TasksTable.$converterpriority.toSql(priority),
+      );
+    }
+    {
+      map['status'] = Variable<int>($TasksTable.$converterstatus.toSql(status));
+    }
+    if (!nullToAbsent || dueDate != null) {
+      map['due_date'] = Variable<DateTime>(dueDate);
+    }
+    if (!nullToAbsent || scheduledStart != null) {
+      map['scheduled_start'] = Variable<DateTime>(scheduledStart);
+    }
+    if (!nullToAbsent || scheduledEnd != null) {
+      map['scheduled_end'] = Variable<DateTime>(scheduledEnd);
+    }
+    if (!nullToAbsent || estimatedMinutes != null) {
+      map['estimated_minutes'] = Variable<int>(estimatedMinutes);
+    }
+    {
+      map['recurrence_type'] = Variable<int>(
+        $TasksTable.$converterrecurrenceType.toSql(recurrenceType),
+      );
+    }
+    map['recurrence_interval'] = Variable<int>(recurrenceInterval);
+    if (!nullToAbsent || parentTaskId != null) {
+      map['parent_task_id'] = Variable<String>(parentTaskId);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || completedAt != null) {
+      map['completed_at'] = Variable<DateTime>(completedAt);
+    }
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    return map;
+  }
+
+  TasksCompanion toCompanion(bool nullToAbsent) {
+    return TasksCompanion(
+      id: Value(id),
+      title: Value(title),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      category: Value(category),
+      priority: Value(priority),
+      status: Value(status),
+      dueDate: dueDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dueDate),
+      scheduledStart: scheduledStart == null && nullToAbsent
+          ? const Value.absent()
+          : Value(scheduledStart),
+      scheduledEnd: scheduledEnd == null && nullToAbsent
+          ? const Value.absent()
+          : Value(scheduledEnd),
+      estimatedMinutes: estimatedMinutes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(estimatedMinutes),
+      recurrenceType: Value(recurrenceType),
+      recurrenceInterval: Value(recurrenceInterval),
+      parentTaskId: parentTaskId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(parentTaskId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      completedAt: completedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedAt),
+      isDeleted: Value(isDeleted),
+    );
+  }
+
+  factory Task.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Task(
+      id: serializer.fromJson<String>(json['id']),
+      title: serializer.fromJson<String>(json['title']),
+      description: serializer.fromJson<String?>(json['description']),
+      category: serializer.fromJson<String>(json['category']),
+      priority: $TasksTable.$converterpriority.fromJson(
+        serializer.fromJson<int>(json['priority']),
+      ),
+      status: $TasksTable.$converterstatus.fromJson(
+        serializer.fromJson<int>(json['status']),
+      ),
+      dueDate: serializer.fromJson<DateTime?>(json['dueDate']),
+      scheduledStart: serializer.fromJson<DateTime?>(json['scheduledStart']),
+      scheduledEnd: serializer.fromJson<DateTime?>(json['scheduledEnd']),
+      estimatedMinutes: serializer.fromJson<int?>(json['estimatedMinutes']),
+      recurrenceType: $TasksTable.$converterrecurrenceType.fromJson(
+        serializer.fromJson<int>(json['recurrenceType']),
+      ),
+      recurrenceInterval: serializer.fromJson<int>(json['recurrenceInterval']),
+      parentTaskId: serializer.fromJson<String?>(json['parentTaskId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'title': serializer.toJson<String>(title),
+      'description': serializer.toJson<String?>(description),
+      'category': serializer.toJson<String>(category),
+      'priority': serializer.toJson<int>(
+        $TasksTable.$converterpriority.toJson(priority),
+      ),
+      'status': serializer.toJson<int>(
+        $TasksTable.$converterstatus.toJson(status),
+      ),
+      'dueDate': serializer.toJson<DateTime?>(dueDate),
+      'scheduledStart': serializer.toJson<DateTime?>(scheduledStart),
+      'scheduledEnd': serializer.toJson<DateTime?>(scheduledEnd),
+      'estimatedMinutes': serializer.toJson<int?>(estimatedMinutes),
+      'recurrenceType': serializer.toJson<int>(
+        $TasksTable.$converterrecurrenceType.toJson(recurrenceType),
+      ),
+      'recurrenceInterval': serializer.toJson<int>(recurrenceInterval),
+      'parentTaskId': serializer.toJson<String?>(parentTaskId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'completedAt': serializer.toJson<DateTime?>(completedAt),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+    };
+  }
+
+  Task copyWith({
+    String? id,
+    String? title,
+    Value<String?> description = const Value.absent(),
+    String? category,
+    TaskPriority? priority,
+    TaskStatus? status,
+    Value<DateTime?> dueDate = const Value.absent(),
+    Value<DateTime?> scheduledStart = const Value.absent(),
+    Value<DateTime?> scheduledEnd = const Value.absent(),
+    Value<int?> estimatedMinutes = const Value.absent(),
+    RecurrenceType? recurrenceType,
+    int? recurrenceInterval,
+    Value<String?> parentTaskId = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> completedAt = const Value.absent(),
+    bool? isDeleted,
+  }) => Task(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description.present ? description.value : this.description,
+    category: category ?? this.category,
+    priority: priority ?? this.priority,
+    status: status ?? this.status,
+    dueDate: dueDate.present ? dueDate.value : this.dueDate,
+    scheduledStart: scheduledStart.present
+        ? scheduledStart.value
+        : this.scheduledStart,
+    scheduledEnd: scheduledEnd.present ? scheduledEnd.value : this.scheduledEnd,
+    estimatedMinutes: estimatedMinutes.present
+        ? estimatedMinutes.value
+        : this.estimatedMinutes,
+    recurrenceType: recurrenceType ?? this.recurrenceType,
+    recurrenceInterval: recurrenceInterval ?? this.recurrenceInterval,
+    parentTaskId: parentTaskId.present ? parentTaskId.value : this.parentTaskId,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    completedAt: completedAt.present ? completedAt.value : this.completedAt,
+    isDeleted: isDeleted ?? this.isDeleted,
+  );
+  Task copyWithCompanion(TasksCompanion data) {
+    return Task(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      category: data.category.present ? data.category.value : this.category,
+      priority: data.priority.present ? data.priority.value : this.priority,
+      status: data.status.present ? data.status.value : this.status,
+      dueDate: data.dueDate.present ? data.dueDate.value : this.dueDate,
+      scheduledStart: data.scheduledStart.present
+          ? data.scheduledStart.value
+          : this.scheduledStart,
+      scheduledEnd: data.scheduledEnd.present
+          ? data.scheduledEnd.value
+          : this.scheduledEnd,
+      estimatedMinutes: data.estimatedMinutes.present
+          ? data.estimatedMinutes.value
+          : this.estimatedMinutes,
+      recurrenceType: data.recurrenceType.present
+          ? data.recurrenceType.value
+          : this.recurrenceType,
+      recurrenceInterval: data.recurrenceInterval.present
+          ? data.recurrenceInterval.value
+          : this.recurrenceInterval,
+      parentTaskId: data.parentTaskId.present
+          ? data.parentTaskId.value
+          : this.parentTaskId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      completedAt: data.completedAt.present
+          ? data.completedAt.value
+          : this.completedAt,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Task(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('category: $category, ')
+          ..write('priority: $priority, ')
+          ..write('status: $status, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('scheduledStart: $scheduledStart, ')
+          ..write('scheduledEnd: $scheduledEnd, ')
+          ..write('estimatedMinutes: $estimatedMinutes, ')
+          ..write('recurrenceType: $recurrenceType, ')
+          ..write('recurrenceInterval: $recurrenceInterval, ')
+          ..write('parentTaskId: $parentTaskId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('isDeleted: $isDeleted')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    title,
+    description,
+    category,
+    priority,
+    status,
+    dueDate,
+    scheduledStart,
+    scheduledEnd,
+    estimatedMinutes,
+    recurrenceType,
+    recurrenceInterval,
+    parentTaskId,
+    createdAt,
+    updatedAt,
+    completedAt,
+    isDeleted,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Task &&
+          other.id == this.id &&
+          other.title == this.title &&
+          other.description == this.description &&
+          other.category == this.category &&
+          other.priority == this.priority &&
+          other.status == this.status &&
+          other.dueDate == this.dueDate &&
+          other.scheduledStart == this.scheduledStart &&
+          other.scheduledEnd == this.scheduledEnd &&
+          other.estimatedMinutes == this.estimatedMinutes &&
+          other.recurrenceType == this.recurrenceType &&
+          other.recurrenceInterval == this.recurrenceInterval &&
+          other.parentTaskId == this.parentTaskId &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.completedAt == this.completedAt &&
+          other.isDeleted == this.isDeleted);
+}
+
+class TasksCompanion extends UpdateCompanion<Task> {
+  final Value<String> id;
+  final Value<String> title;
+  final Value<String?> description;
+  final Value<String> category;
+  final Value<TaskPriority> priority;
+  final Value<TaskStatus> status;
+  final Value<DateTime?> dueDate;
+  final Value<DateTime?> scheduledStart;
+  final Value<DateTime?> scheduledEnd;
+  final Value<int?> estimatedMinutes;
+  final Value<RecurrenceType> recurrenceType;
+  final Value<int> recurrenceInterval;
+  final Value<String?> parentTaskId;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> completedAt;
+  final Value<bool> isDeleted;
+  final Value<int> rowid;
+  const TasksCompanion({
+    this.id = const Value.absent(),
+    this.title = const Value.absent(),
+    this.description = const Value.absent(),
+    this.category = const Value.absent(),
+    this.priority = const Value.absent(),
+    this.status = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.scheduledStart = const Value.absent(),
+    this.scheduledEnd = const Value.absent(),
+    this.estimatedMinutes = const Value.absent(),
+    this.recurrenceType = const Value.absent(),
+    this.recurrenceInterval = const Value.absent(),
+    this.parentTaskId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.completedAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TasksCompanion.insert({
+    required String id,
+    required String title,
+    this.description = const Value.absent(),
+    this.category = const Value.absent(),
+    this.priority = const Value.absent(),
+    this.status = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.scheduledStart = const Value.absent(),
+    this.scheduledEnd = const Value.absent(),
+    this.estimatedMinutes = const Value.absent(),
+    this.recurrenceType = const Value.absent(),
+    this.recurrenceInterval = const Value.absent(),
+    this.parentTaskId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.completedAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       title = Value(title);
+  static Insertable<Task> custom({
+    Expression<String>? id,
+    Expression<String>? title,
+    Expression<String>? description,
+    Expression<String>? category,
+    Expression<int>? priority,
+    Expression<int>? status,
+    Expression<DateTime>? dueDate,
+    Expression<DateTime>? scheduledStart,
+    Expression<DateTime>? scheduledEnd,
+    Expression<int>? estimatedMinutes,
+    Expression<int>? recurrenceType,
+    Expression<int>? recurrenceInterval,
+    Expression<String>? parentTaskId,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? completedAt,
+    Expression<bool>? isDeleted,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (title != null) 'title': title,
+      if (description != null) 'description': description,
+      if (category != null) 'category': category,
+      if (priority != null) 'priority': priority,
+      if (status != null) 'status': status,
+      if (dueDate != null) 'due_date': dueDate,
+      if (scheduledStart != null) 'scheduled_start': scheduledStart,
+      if (scheduledEnd != null) 'scheduled_end': scheduledEnd,
+      if (estimatedMinutes != null) 'estimated_minutes': estimatedMinutes,
+      if (recurrenceType != null) 'recurrence_type': recurrenceType,
+      if (recurrenceInterval != null) 'recurrence_interval': recurrenceInterval,
+      if (parentTaskId != null) 'parent_task_id': parentTaskId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (completedAt != null) 'completed_at': completedAt,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TasksCompanion copyWith({
+    Value<String>? id,
+    Value<String>? title,
+    Value<String?>? description,
+    Value<String>? category,
+    Value<TaskPriority>? priority,
+    Value<TaskStatus>? status,
+    Value<DateTime?>? dueDate,
+    Value<DateTime?>? scheduledStart,
+    Value<DateTime?>? scheduledEnd,
+    Value<int?>? estimatedMinutes,
+    Value<RecurrenceType>? recurrenceType,
+    Value<int>? recurrenceInterval,
+    Value<String?>? parentTaskId,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? completedAt,
+    Value<bool>? isDeleted,
+    Value<int>? rowid,
+  }) {
+    return TasksCompanion(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      category: category ?? this.category,
+      priority: priority ?? this.priority,
+      status: status ?? this.status,
+      dueDate: dueDate ?? this.dueDate,
+      scheduledStart: scheduledStart ?? this.scheduledStart,
+      scheduledEnd: scheduledEnd ?? this.scheduledEnd,
+      estimatedMinutes: estimatedMinutes ?? this.estimatedMinutes,
+      recurrenceType: recurrenceType ?? this.recurrenceType,
+      recurrenceInterval: recurrenceInterval ?? this.recurrenceInterval,
+      parentTaskId: parentTaskId ?? this.parentTaskId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      completedAt: completedAt ?? this.completedAt,
+      isDeleted: isDeleted ?? this.isDeleted,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (priority.present) {
+      map['priority'] = Variable<int>(
+        $TasksTable.$converterpriority.toSql(priority.value),
+      );
+    }
+    if (status.present) {
+      map['status'] = Variable<int>(
+        $TasksTable.$converterstatus.toSql(status.value),
+      );
+    }
+    if (dueDate.present) {
+      map['due_date'] = Variable<DateTime>(dueDate.value);
+    }
+    if (scheduledStart.present) {
+      map['scheduled_start'] = Variable<DateTime>(scheduledStart.value);
+    }
+    if (scheduledEnd.present) {
+      map['scheduled_end'] = Variable<DateTime>(scheduledEnd.value);
+    }
+    if (estimatedMinutes.present) {
+      map['estimated_minutes'] = Variable<int>(estimatedMinutes.value);
+    }
+    if (recurrenceType.present) {
+      map['recurrence_type'] = Variable<int>(
+        $TasksTable.$converterrecurrenceType.toSql(recurrenceType.value),
+      );
+    }
+    if (recurrenceInterval.present) {
+      map['recurrence_interval'] = Variable<int>(recurrenceInterval.value);
+    }
+    if (parentTaskId.present) {
+      map['parent_task_id'] = Variable<String>(parentTaskId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<DateTime>(completedAt.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TasksCompanion(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('category: $category, ')
+          ..write('priority: $priority, ')
+          ..write('status: $status, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('scheduledStart: $scheduledStart, ')
+          ..write('scheduledEnd: $scheduledEnd, ')
+          ..write('estimatedMinutes: $estimatedMinutes, ')
+          ..write('recurrenceType: $recurrenceType, ')
+          ..write('recurrenceInterval: $recurrenceInterval, ')
+          ..write('parentTaskId: $parentTaskId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+abstract class _$AppDatabase extends GeneratedDatabase {
+  _$AppDatabase(QueryExecutor e) : super(e);
+  $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final $TasksTable tasks = $TasksTable(this);
+  @override
+  Iterable<TableInfo<Table, Object?>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+  @override
+  List<DatabaseSchemaEntity> get allSchemaEntities => [tasks];
+}
+
+typedef $$TasksTableCreateCompanionBuilder =
+    TasksCompanion Function({
+      required String id,
+      required String title,
+      Value<String?> description,
+      Value<String> category,
+      Value<TaskPriority> priority,
+      Value<TaskStatus> status,
+      Value<DateTime?> dueDate,
+      Value<DateTime?> scheduledStart,
+      Value<DateTime?> scheduledEnd,
+      Value<int?> estimatedMinutes,
+      Value<RecurrenceType> recurrenceType,
+      Value<int> recurrenceInterval,
+      Value<String?> parentTaskId,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> completedAt,
+      Value<bool> isDeleted,
+      Value<int> rowid,
+    });
+typedef $$TasksTableUpdateCompanionBuilder =
+    TasksCompanion Function({
+      Value<String> id,
+      Value<String> title,
+      Value<String?> description,
+      Value<String> category,
+      Value<TaskPriority> priority,
+      Value<TaskStatus> status,
+      Value<DateTime?> dueDate,
+      Value<DateTime?> scheduledStart,
+      Value<DateTime?> scheduledEnd,
+      Value<int?> estimatedMinutes,
+      Value<RecurrenceType> recurrenceType,
+      Value<int> recurrenceInterval,
+      Value<String?> parentTaskId,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> completedAt,
+      Value<bool> isDeleted,
+      Value<int> rowid,
+    });
+
+class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
+  $$TasksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<TaskPriority, TaskPriority, int>
+  get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<TaskStatus, TaskStatus, int> get status =>
+      $composableBuilder(
+        column: $table.status,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<DateTime> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get scheduledStart => $composableBuilder(
+    column: $table.scheduledStart,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get scheduledEnd => $composableBuilder(
+    column: $table.scheduledEnd,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get estimatedMinutes => $composableBuilder(
+    column: $table.estimatedMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<RecurrenceType, RecurrenceType, int>
+  get recurrenceType => $composableBuilder(
+    column: $table.recurrenceType,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<int> get recurrenceInterval => $composableBuilder(
+    column: $table.recurrenceInterval,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get parentTaskId => $composableBuilder(
+    column: $table.parentTaskId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$TasksTableOrderingComposer
+    extends Composer<_$AppDatabase, $TasksTable> {
+  $$TasksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get scheduledStart => $composableBuilder(
+    column: $table.scheduledStart,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get scheduledEnd => $composableBuilder(
+    column: $table.scheduledEnd,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get estimatedMinutes => $composableBuilder(
+    column: $table.estimatedMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get recurrenceType => $composableBuilder(
+    column: $table.recurrenceType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get recurrenceInterval => $composableBuilder(
+    column: $table.recurrenceInterval,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get parentTaskId => $composableBuilder(
+    column: $table.parentTaskId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TasksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TasksTable> {
+  $$TasksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<TaskPriority, int> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<TaskStatus, int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get scheduledStart => $composableBuilder(
+    column: $table.scheduledStart,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get scheduledEnd => $composableBuilder(
+    column: $table.scheduledEnd,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get estimatedMinutes => $composableBuilder(
+    column: $table.estimatedMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<RecurrenceType, int> get recurrenceType =>
+      $composableBuilder(
+        column: $table.recurrenceType,
+        builder: (column) => column,
+      );
+
+  GeneratedColumn<int> get recurrenceInterval => $composableBuilder(
+    column: $table.recurrenceInterval,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get parentTaskId => $composableBuilder(
+    column: $table.parentTaskId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+}
+
+class $$TasksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TasksTable,
+          Task,
+          $$TasksTableFilterComposer,
+          $$TasksTableOrderingComposer,
+          $$TasksTableAnnotationComposer,
+          $$TasksTableCreateCompanionBuilder,
+          $$TasksTableUpdateCompanionBuilder,
+          (Task, BaseReferences<_$AppDatabase, $TasksTable, Task>),
+          Task,
+          PrefetchHooks Function()
+        > {
+  $$TasksTableTableManager(_$AppDatabase db, $TasksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TasksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TasksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TasksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<TaskPriority> priority = const Value.absent(),
+                Value<TaskStatus> status = const Value.absent(),
+                Value<DateTime?> dueDate = const Value.absent(),
+                Value<DateTime?> scheduledStart = const Value.absent(),
+                Value<DateTime?> scheduledEnd = const Value.absent(),
+                Value<int?> estimatedMinutes = const Value.absent(),
+                Value<RecurrenceType> recurrenceType = const Value.absent(),
+                Value<int> recurrenceInterval = const Value.absent(),
+                Value<String?> parentTaskId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TasksCompanion(
+                id: id,
+                title: title,
+                description: description,
+                category: category,
+                priority: priority,
+                status: status,
+                dueDate: dueDate,
+                scheduledStart: scheduledStart,
+                scheduledEnd: scheduledEnd,
+                estimatedMinutes: estimatedMinutes,
+                recurrenceType: recurrenceType,
+                recurrenceInterval: recurrenceInterval,
+                parentTaskId: parentTaskId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                completedAt: completedAt,
+                isDeleted: isDeleted,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String title,
+                Value<String?> description = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<TaskPriority> priority = const Value.absent(),
+                Value<TaskStatus> status = const Value.absent(),
+                Value<DateTime?> dueDate = const Value.absent(),
+                Value<DateTime?> scheduledStart = const Value.absent(),
+                Value<DateTime?> scheduledEnd = const Value.absent(),
+                Value<int?> estimatedMinutes = const Value.absent(),
+                Value<RecurrenceType> recurrenceType = const Value.absent(),
+                Value<int> recurrenceInterval = const Value.absent(),
+                Value<String?> parentTaskId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TasksCompanion.insert(
+                id: id,
+                title: title,
+                description: description,
+                category: category,
+                priority: priority,
+                status: status,
+                dueDate: dueDate,
+                scheduledStart: scheduledStart,
+                scheduledEnd: scheduledEnd,
+                estimatedMinutes: estimatedMinutes,
+                recurrenceType: recurrenceType,
+                recurrenceInterval: recurrenceInterval,
+                parentTaskId: parentTaskId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                completedAt: completedAt,
+                isDeleted: isDeleted,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$TasksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TasksTable,
+      Task,
+      $$TasksTableFilterComposer,
+      $$TasksTableOrderingComposer,
+      $$TasksTableAnnotationComposer,
+      $$TasksTableCreateCompanionBuilder,
+      $$TasksTableUpdateCompanionBuilder,
+      (Task, BaseReferences<_$AppDatabase, $TasksTable, Task>),
+      Task,
+      PrefetchHooks Function()
+    >;
+
+class $AppDatabaseManager {
+  final _$AppDatabase _db;
+  $AppDatabaseManager(this._db);
+  $$TasksTableTableManager get tasks =>
+      $$TasksTableTableManager(_db, _db.tasks);
+}
