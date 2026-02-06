@@ -91,10 +91,10 @@
 - [ ] Build subtask relationship model
 
 ### 4.2 Task CRUD Operations
-- [ ] Create task creation form with all fields
+- [x] Create task creation form with all fields
 - [ ] Build task editing functionality
 - [ ] Implement task deletion with confirmation
-- [ ] Add quick-add task feature
+- [x] Add quick-add task feature
 
 ### 4.3 Task List View
 - [ ] Design calendar + timeline hybrid view
