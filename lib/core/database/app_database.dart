@@ -9,16 +9,17 @@ import 'tables/tasks_table.dart';
 import 'tables/water_intakes_table.dart';
 import 'tables/exercises_table.dart';
 import 'tables/sleep_logs_table.dart';
+import 'tables/subtasks_table.dart';
 
 part 'app_database.g.dart';
 
 /// Main application database
-@DriftDatabase(tables: [Tasks, WaterIntakes, Exercises, SleepLogs])
+@DriftDatabase(tables: [Tasks, WaterIntakes, Exercises, SleepLogs, Subtasks])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -35,6 +36,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 4) {
           await m.createTable(sleepLogs);
+        }
+        if (from < 5) {
+          await m.createTable(subtasks);
         }
       },
     );
@@ -320,6 +324,63 @@ class AppDatabase extends _$AppDatabase {
   /// Delete a sleep log
   Future<int> deleteSleepLog(String id) {
     return (delete(sleepLogs)..where((s) => s.id.equals(id))).go();
+  }
+
+  // ===== Subtask Operations =====
+
+  /// Insert a new subtask
+  Future<int> insertSubtask(SubtasksCompanion subtask) {
+    return into(subtasks).insert(subtask);
+  }
+
+  /// Get subtasks for a parent task
+  Future<List<Subtask>> getSubtasksForTask(String parentTaskId) {
+    return (select(subtasks)
+          ..where((s) => s.parentTaskId.equals(parentTaskId))
+          ..orderBy([(s) => OrderingTerm.asc(s.sortOrder)]))
+        .get();
+  }
+
+  /// Watch subtasks for a parent task
+  Stream<List<Subtask>> watchSubtasksForTask(String parentTaskId) {
+    return (select(subtasks)
+          ..where((s) => s.parentTaskId.equals(parentTaskId))
+          ..orderBy([(s) => OrderingTerm.asc(s.sortOrder)]))
+        .watch();
+  }
+
+  /// Update subtask completion status
+  Future<int> updateSubtaskCompletion(String id, bool isCompleted) {
+    return (update(subtasks)..where((s) => s.id.equals(id))).write(
+      SubtasksCompanion(
+        isCompleted: Value(isCompleted),
+        completedAt: Value(isCompleted ? DateTime.now() : null),
+      ),
+    );
+  }
+
+  /// Update subtask title
+  Future<int> updateSubtaskTitle(String id, String title) {
+    return (update(subtasks)..where((s) => s.id.equals(id))).write(
+      SubtasksCompanion(title: Value(title)),
+    );
+  }
+
+  /// Delete a subtask
+  Future<int> deleteSubtask(String id) {
+    return (delete(subtasks)..where((s) => s.id.equals(id))).go();
+  }
+
+  /// Delete all subtasks for a parent task
+  Future<int> deleteSubtasksForTask(String parentTaskId) {
+    return (delete(subtasks)..where((s) => s.parentTaskId.equals(parentTaskId))).go();
+  }
+
+  /// Get subtask count for a task (total and completed)
+  Future<({int total, int completed})> getSubtaskCounts(String parentTaskId) async {
+    final subs = await getSubtasksForTask(parentTaskId);
+    final completed = subs.where((s) => s.isCompleted).length;
+    return (total: subs.length, completed: completed);
   }
 }
 

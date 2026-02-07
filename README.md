@@ -114,7 +114,7 @@ lib/
 - [x] Insights dashboard
 - [x] Settings screen
 - [x] Exercise tracking
-- [ ] Sleep tracking
+- [x] Sleep tracking
 - [ ] Supabase cloud sync
 - [ ] Push notifications
 - [ ] Widget support

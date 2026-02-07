@@ -7,8 +7,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import 'data/tasks_repository.dart';
 import 'widgets/add_task_sheet.dart';
-import 'widgets/edit_task_sheet.dart';
 import 'widgets/task_card.dart';
+import 'widgets/task_detail_sheet.dart';
 
 /// Tasks screen - task management and scheduling
 class TasksScreen extends ConsumerWidget {
@@ -145,7 +145,7 @@ class TasksScreen extends ConsumerWidget {
                 task: task,
                 onComplete: () => _completeTask(ref, task.id),
                 onDelete: () => _deleteTask(ref, task.id),
-                onEdit: () => _showEditTaskSheet(context, task),
+                onEdit: () => _showTaskDetailSheet(context, task),
               )),
         ],
 
@@ -183,12 +183,12 @@ class TasksScreen extends ConsumerWidget {
     );
   }
 
-  void _showEditTaskSheet(BuildContext context, Task task) {
+  void _showTaskDetailSheet(BuildContext context, Task task) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => EditTaskSheet(task: task),
+      builder: (context) => TaskDetailSheet(task: task),
     );
   }
 
