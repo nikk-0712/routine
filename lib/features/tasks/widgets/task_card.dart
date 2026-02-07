@@ -10,12 +10,14 @@ class TaskCard extends StatelessWidget {
   final Task task;
   final VoidCallback? onComplete;
   final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
 
   const TaskCard({
     super.key,
     required this.task,
     this.onComplete,
     this.onDelete,
+    this.onEdit,
   });
 
   @override
@@ -50,7 +52,7 @@ class TaskCard extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
-            onTap: isCompleted ? null : onComplete,
+            onTap: isCompleted ? null : onEdit, // Tap to edit
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -119,6 +121,15 @@ class TaskCard extends StatelessWidget {
                       ],
                     ),
                   ),
+
+                  // Edit indicator for pending tasks
+                  if (!isCompleted)
+                    const Icon(
+                      Icons.edit_outlined,
+                      size: 16,
+                      color: AppColors.textSecondary,
+                    ),
+                  const SizedBox(width: 8),
 
                   // Priority indicator
                   _buildPriorityIndicator(),
