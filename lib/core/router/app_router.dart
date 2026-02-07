@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/login_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/tasks/tasks_screen.dart';
 import '../../features/health/health_screen.dart';
@@ -14,12 +15,18 @@ class AppRoutes {
   static const String health = '/health';
   static const String insights = '/insights';
   static const String settings = '/settings';
+  static const String login = '/login';
 }
 
 /// Main app router configuration
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.home,
   routes: [
+    // Login route (outside shell)
+    GoRoute(
+      path: AppRoutes.login,
+      builder: (context, state) => const LoginScreen(),
+    ),
     // Shell route for bottom navigation
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {

@@ -20,7 +20,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -44,6 +44,24 @@ class AppDatabase extends _$AppDatabase {
         if (from < 6) {
           await m.createTable(tags);
           await m.createTable(taskTags);
+        }
+        if (from < 7) {
+          // Add sync columns to existing tables
+          await m.addColumn(tasks, tasks.syncedAt);
+          
+          await m.addColumn(subtasks, subtasks.updatedAt);
+          await m.addColumn(subtasks, subtasks.syncedAt);
+          await m.addColumn(subtasks, subtasks.isDeleted);
+          
+          await m.addColumn(tags, tags.updatedAt);
+          await m.addColumn(tags, tags.syncedAt);
+          await m.addColumn(tags, tags.isDeleted);
+          
+          // Re-create TaskTags if needed or add columns (adding columns is safer)
+          await m.addColumn(taskTags, taskTags.createdAt);
+          await m.addColumn(taskTags, taskTags.updatedAt);
+          await m.addColumn(taskTags, taskTags.syncedAt);
+          await m.addColumn(taskTags, taskTags.isDeleted);
         }
       },
     );
@@ -445,6 +463,120 @@ class AppDatabase extends _$AppDatabase {
       ..where(taskTags.taskId.equals(taskId));
 
     return query.map((row) => row.readTable(tags)).watch();
+  }
+
+  // ===== Sync Operations =====
+
+  /// Get unsynced tasks (syncedAt is null or < updatedAt)
+  Future<List<Task>> getUnsyncedTasks() {
+    return (select(tasks)
+          ..where((t) => t.syncedAt.isNull() | t.syncedAt.isSmallerThan(t.updatedAt)))
+        .get();
+  }
+
+  /// Mark task as synced
+  Future<void> markTaskSynced(String id) async {
+    await (update(tasks)..where((t) => t.id.equals(id)))
+        .write(TasksCompanion(syncedAt: Value(DateTime.now())));
+  }
+
+  /// Get task by ID
+  Future<Task?> getTaskById(String id) {
+    return (select(tasks)..where((t) => t.id.equals(id))).getSingleOrNull();
+  }
+
+  /// Upsert task from remote
+  Future<void> upsertTaskFromRemote({
+    required String id,
+    required String title,
+    String? description,
+    required String category,
+    required int priority,
+    required int status,
+    DateTime? dueDate,
+    DateTime? scheduledStart,
+    DateTime? scheduledEnd,
+    int? estimatedMinutes,
+    required int recurrenceType,
+    required int recurrenceInterval,
+    String? parentTaskId,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    DateTime? completedAt,
+    required bool isDeleted,
+  }) async {
+    await into(tasks).insertOnConflictUpdate(TasksCompanion(
+      id: Value(id),
+      title: Value(title),
+      description: Value(description),
+      category: Value(category),
+      priority: Value(TaskPriority.values[priority]),
+      status: Value(TaskStatus.values[status]),
+      dueDate: Value(dueDate),
+      scheduledStart: Value(scheduledStart),
+      scheduledEnd: Value(scheduledEnd),
+      estimatedMinutes: Value(estimatedMinutes),
+      recurrenceType: Value(RecurrenceType.values[recurrenceType]),
+      recurrenceInterval: Value(recurrenceInterval),
+      parentTaskId: Value(parentTaskId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      syncedAt: Value(DateTime.now()),
+      completedAt: Value(completedAt),
+      isDeleted: Value(isDeleted),
+    ));
+  }
+
+  /// Get unsynced tags
+  Future<List<Tag>> getUnsyncedTags() {
+    return (select(tags)
+          ..where((t) => t.syncedAt.isNull() | t.syncedAt.isSmallerThan(t.updatedAt)))
+        .get();
+  }
+
+  /// Mark tag as synced
+  Future<void> markTagSynced(String id) async {
+    await (update(tags)..where((t) => t.id.equals(id)))
+        .write(TagsCompanion(syncedAt: Value(DateTime.now())));
+  }
+
+  /// Get tag by ID
+  Future<Tag?> getTagById(String id) {
+    return (select(tags)..where((t) => t.id.equals(id))).getSingleOrNull();
+  }
+
+  /// Upsert tag from remote
+  Future<void> upsertTagFromRemote({
+    required String id,
+    required String name,
+    required int color,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    required bool isDeleted,
+  }) async {
+    await into(tags).insertOnConflictUpdate(TagsCompanion(
+      id: Value(id),
+      name: Value(name),
+      color: Value(color),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      syncedAt: Value(DateTime.now()),
+      isDeleted: Value(isDeleted),
+    ));
+  }
+
+  /// Get unsynced task-tags
+  Future<List<TaskTag>> getUnsyncedTaskTags() {
+    return (select(taskTags)
+          ..where((t) => t.syncedAt.isNull() | t.syncedAt.isSmallerThan(t.updatedAt)))
+        .get();
+  }
+
+  /// Mark task-tag as synced
+  Future<void> markTaskTagSynced(String taskId, String tagId) async {
+    await (update(taskTags)
+          ..where((t) => t.taskId.equals(taskId) & t.tagId.equals(tagId)))
+        .write(TaskTagsCompanion(syncedAt: Value(DateTime.now())));
   }
 }
 

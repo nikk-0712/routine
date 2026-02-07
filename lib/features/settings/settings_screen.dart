@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../core/auth/auth_service.dart';
 import '../../core/notifications/notification_service.dart';
 import '../../core/providers/database_provider.dart';
+import '../../core/router/app_router.dart';
 import '../../core/settings/settings_provider.dart';
+import '../../core/sync/sync_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 
@@ -47,6 +51,12 @@ class SettingsScreen extends ConsumerWidget {
               _buildSectionHeader('Notifications'),
               const SizedBox(height: 12),
               _buildNotificationToggle(ref, settings),
+              const SizedBox(height: 24),
+
+              // Cloud Sync Section
+              _buildSectionHeader('Cloud Sync'),
+              const SizedBox(height: 12),
+              _buildSyncSection(context, ref),
               const SizedBox(height: 24),
 
               // About Section
@@ -384,6 +394,141 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSyncSection(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(currentUserProvider);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: userAsync.when(
+        data: (user) {
+          if (user == null) {
+            // Not logged in
+            return Row(
+              children: [
+                Icon(Icons.cloud_off, color: AppColors.textSecondary, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Not Syncing',
+                        style: AppTypography.bodyLarge.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      Text(
+                        'Sign in to sync your data across devices',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () => context.go(AppRoutes.login),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text('Sign In'),
+                ),
+              ],
+            );
+          }
+
+          // Logged in
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.cloud_done, color: AppColors.success, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Syncing Enabled',
+                          style: AppTypography.bodyLarge.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          user.email ?? 'Signed in',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        final syncService = ref.read(syncServiceProvider);
+                        final result = await syncService.syncAll();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(result.success
+                                  ? 'Sync completed!'
+                                  : 'Sync failed: ${result.error}'),
+                              backgroundColor:
+                                  result.success ? AppColors.success : AppColors.error,
+                            ),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.sync),
+                      label: const Text('Sync Now'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  TextButton(
+                    onPressed: () async {
+                      final authService = ref.read(authServiceProvider);
+                      await authService.signOut();
+                    },
+                    child: Text(
+                      'Sign Out',
+                      style: AppTypography.labelMedium.copyWith(
+                        color: AppColors.error,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, __) => Text(
+          'Error loading sync status',
+          style: AppTypography.bodyMedium.copyWith(color: AppColors.error),
+        ),
       ),
     );
   }
