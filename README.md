@@ -113,7 +113,7 @@ lib/
 - [x] Hydration tracking
 - [x] Insights dashboard
 - [x] Settings screen
-- [ ] Exercise tracking
+- [x] Exercise tracking
 - [ ] Sleep tracking
 - [ ] Supabase cloud sync
 - [ ] Push notifications

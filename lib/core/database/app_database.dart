@@ -8,16 +8,17 @@ import 'package:path/path.dart' as p;
 import 'tables/tasks_table.dart';
 import 'tables/water_intakes_table.dart';
 import 'tables/exercises_table.dart';
+import 'tables/sleep_logs_table.dart';
 
 part 'app_database.g.dart';
 
 /// Main application database
-@DriftDatabase(tables: [Tasks, WaterIntakes, Exercises])
+@DriftDatabase(tables: [Tasks, WaterIntakes, Exercises, SleepLogs])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
@@ -31,6 +32,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 3) {
           await m.createTable(exercises);
+        }
+        if (from < 4) {
+          await m.createTable(sleepLogs);
         }
       },
     );
@@ -267,6 +271,55 @@ class AppDatabase extends _$AppDatabase {
   /// Delete an exercise
   Future<int> deleteExercise(String id) {
     return (delete(exercises)..where((e) => e.id.equals(id))).go();
+  }
+
+  // ===== Sleep Operations =====
+
+  /// Insert a new sleep log
+  Future<int> insertSleepLog(SleepLogsCompanion log) {
+    return into(sleepLogs).insert(log);
+  }
+
+  /// Get all sleep logs
+  Future<List<SleepLog>> getAllSleepLogs() {
+    return (select(sleepLogs)
+          ..orderBy([(s) => OrderingTerm.desc(s.sleepDate)]))
+        .get();
+  }
+
+  /// Get last night's sleep log (most recent)
+  Future<SleepLog?> getLastNightsSleep() async {
+    final logs = await (select(sleepLogs)
+          ..orderBy([(s) => OrderingTerm.desc(s.sleepDate)])
+          ..limit(1))
+        .get();
+    return logs.isEmpty ? null : logs.first;
+  }
+
+  /// Watch last night's sleep
+  Stream<SleepLog?> watchLastNightsSleep() {
+    return (select(sleepLogs)
+          ..orderBy([(s) => OrderingTerm.desc(s.sleepDate)])
+          ..limit(1))
+        .watchSingleOrNull();
+  }
+
+  /// Get sleep log for a specific date
+  Future<SleepLog?> getSleepForDate(DateTime date) async {
+    final startOfDay = DateTime(date.year, date.month, date.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
+
+    final logs = await (select(sleepLogs)
+          ..where((s) =>
+              s.sleepDate.isBiggerOrEqualValue(startOfDay) &
+              s.sleepDate.isSmallerThanValue(endOfDay)))
+        .get();
+    return logs.isEmpty ? null : logs.first;
+  }
+
+  /// Delete a sleep log
+  Future<int> deleteSleepLog(String id) {
+    return (delete(sleepLogs)..where((s) => s.id.equals(id))).go();
   }
 }
 
