@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/notifications/notification_service.dart';
 import '../../core/providers/database_provider.dart';
 import '../../core/settings/settings_provider.dart';
 import '../../core/theme/app_colors.dart';
@@ -201,39 +202,75 @@ class SettingsScreen extends ConsumerWidget {
         color: AppColors.surfaceVariant,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Icon(Icons.notifications_outlined, color: AppColors.primary, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Reminders',
-                  style: AppTypography.bodyLarge.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
+          Row(
+            children: [
+              Icon(Icons.notifications_outlined, color: AppColors.primary, size: 24),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Reminders',
+                      style: AppTypography.bodyLarge.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      'Task and hydration reminders',
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  'Task and hydration reminders',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+              ),
+              Switch(
+                value: settings.notificationsEnabled,
+                onChanged: (value) async {
+                  ref.read(settingsProvider.notifier).setNotificationsEnabled(value);
+                  final notificationService = ref.read(notificationServiceProvider);
+                  
+                  if (value) {
+                    // Request permission and schedule hydration reminders
+                    await notificationService.requestPermission();
+                    await notificationService.scheduleHydrationReminder(intervalHours: 2);
+                  } else {
+                    // Cancel all reminders
+                    await notificationService.cancelHydrationReminders();
+                  }
+                },
+                activeColor: AppColors.primary,
+                activeTrackColor: AppColors.primary.withValues(alpha: 0.5),
+                inactiveThumbColor: AppColors.textSecondary,
+                inactiveTrackColor: AppColors.surface,
+              ),
+            ],
+          ),
+          if (settings.notificationsEnabled) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.water_drop, color: AppColors.secondary, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Hydration reminders every 2 hours (8 AM - 10 PM)',
+                    style: AppTypography.labelSmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Switch(
-            value: settings.notificationsEnabled,
-            onChanged: (value) {
-              ref.read(settingsProvider.notifier).setNotificationsEnabled(value);
-            },
-            activeColor: AppColors.primary,
-            activeTrackColor: AppColors.primary.withValues(alpha: 0.5),
-            inactiveThumbColor: AppColors.textSecondary,
-            inactiveTrackColor: AppColors.surface,
-          ),
+          ],
         ],
       ),
     );
