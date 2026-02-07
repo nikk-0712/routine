@@ -7,16 +7,17 @@ import 'package:path/path.dart' as p;
 
 import 'tables/tasks_table.dart';
 import 'tables/water_intakes_table.dart';
+import 'tables/exercises_table.dart';
 
 part 'app_database.g.dart';
 
 /// Main application database
-@DriftDatabase(tables: [Tasks, WaterIntakes])
+@DriftDatabase(tables: [Tasks, WaterIntakes, Exercises])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -27,6 +28,9 @@ class AppDatabase extends _$AppDatabase {
       onUpgrade: (Migrator m, int from, int to) async {
         if (from < 2) {
           await m.createTable(waterIntakes);
+        }
+        if (from < 3) {
+          await m.createTable(exercises);
         }
       },
     );
@@ -204,6 +208,65 @@ class AppDatabase extends _$AppDatabase {
   /// Delete a water intake log
   Future<int> deleteWaterIntake(int id) {
     return (delete(waterIntakes)..where((w) => w.id.equals(id))).go();
+  }
+
+  // ===== Exercise Operations =====
+
+  /// Insert a new exercise log
+  Future<int> insertExercise(ExercisesCompanion exercise) {
+    return into(exercises).insert(exercise);
+  }
+
+  /// Get all exercises
+  Future<List<Exercise>> getAllExercises() {
+    return (select(exercises)
+          ..orderBy([(e) => OrderingTerm.desc(e.performedAt)]))
+        .get();
+  }
+
+  /// Get today's exercises
+  Future<List<Exercise>> getTodaysExercises() {
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
+
+    return (select(exercises)
+          ..where((e) =>
+              e.performedAt.isBiggerOrEqualValue(startOfDay) &
+              e.performedAt.isSmallerThanValue(endOfDay))
+          ..orderBy([(e) => OrderingTerm.desc(e.performedAt)]))
+        .get();
+  }
+
+  /// Watch today's exercises
+  Stream<List<Exercise>> watchTodaysExercises() {
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
+
+    return (select(exercises)
+          ..where((e) =>
+              e.performedAt.isBiggerOrEqualValue(startOfDay) &
+              e.performedAt.isSmallerThanValue(endOfDay))
+          ..orderBy([(e) => OrderingTerm.desc(e.performedAt)]))
+        .watch();
+  }
+
+  /// Get total exercise minutes today
+  Future<int> getTodaysTotalExerciseMinutes() async {
+    final todaysExercises = await getTodaysExercises();
+    return todaysExercises.fold<int>(0, (sum, e) => sum + e.durationMinutes);
+  }
+
+  /// Watch today's total exercise minutes
+  Stream<int> watchTodaysTotalExerciseMinutes() {
+    return watchTodaysExercises()
+        .map((exercises) => exercises.fold<int>(0, (sum, e) => sum + e.durationMinutes));
+  }
+
+  /// Delete an exercise
+  Future<int> deleteExercise(String id) {
+    return (delete(exercises)..where((e) => e.id.equals(id))).go();
   }
 }
 

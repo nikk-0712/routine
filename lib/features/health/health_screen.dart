@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/database/app_database.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import 'data/exercise_repository.dart';
 import 'data/hydration_repository.dart';
 
 /// Health screen - wellness tracking (water, exercise, nutrition, sleep)
@@ -13,6 +15,8 @@ class HealthScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final waterMlAsync = ref.watch(todaysWaterIntakeProvider);
     final progressAsync = ref.watch(hydrationProgressProvider);
+    final exerciseMinutesAsync = ref.watch(todaysExerciseMinutesProvider);
+    final todaysExercisesAsync = ref.watch(todaysExercisesProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -36,7 +40,7 @@ class HealthScreen extends ConsumerWidget {
 
               // Quick Add Section
               Text(
-                'Quick Add',
+                'Quick Add Water',
                 style: AppTypography.labelLarge.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -45,9 +49,11 @@ class HealthScreen extends ConsumerWidget {
               _buildQuickAddButtons(ref),
               const SizedBox(height: 24),
 
-              // Other health metrics placeholder
-              _buildComingSoonCard('Exercise Tracking', Icons.fitness_center),
-              const SizedBox(height: 12),
+              // Exercise Card
+              _buildExerciseCard(context, ref, exerciseMinutesAsync, todaysExercisesAsync),
+              const SizedBox(height: 24),
+
+              // Sleep placeholder
               _buildComingSoonCard('Sleep Tracking', Icons.bedtime),
             ],
           ),
@@ -221,6 +227,223 @@ class HealthScreen extends ConsumerWidget {
     await repository.logGlass(glasses: glasses);
   }
 
+  Widget _buildExerciseCard(
+    BuildContext context,
+    WidgetRef ref,
+    AsyncValue<int> minutesAsync,
+    AsyncValue<List<Exercise>> exercisesAsync,
+  ) {
+    final minutes = minutesAsync.whenOrNull(data: (m) => m) ?? 0;
+    final progress = (minutes / defaultExerciseGoalMinutes).clamp(0.0, 1.0);
+    final isComplete = minutes >= defaultExerciseGoalMinutes;
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: AppColors.cardGradient,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.accent.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          // Title row
+          Row(
+            children: [
+              Icon(Icons.fitness_center, color: AppColors.accent, size: 24),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Exercise',
+                  style: AppTypography.headlineSmall.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => _showLogExerciseSheet(context, ref),
+                icon: Icon(Icons.add, color: AppColors.accent, size: 18),
+                label: Text(
+                  'Log',
+                  style: AppTypography.labelMedium.copyWith(
+                    color: AppColors.accent,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Progress row
+          Row(
+            children: [
+              // Mini progress ring
+              SizedBox(
+                width: 80,
+                height: 80,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      value: progress,
+                      strokeWidth: 8,
+                      backgroundColor: AppColors.surface,
+                      color: isComplete ? AppColors.success : AppColors.accent,
+                      strokeCap: StrokeCap.round,
+                    ),
+                    Icon(
+                      isComplete ? Icons.check : Icons.directions_run,
+                      color: isComplete ? AppColors.success : AppColors.accent,
+                      size: 24,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 24),
+              
+              // Stats
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '$minutes',
+                          style: AppTypography.metricSmall.copyWith(
+                            color: AppColors.accent,
+                          ),
+                        ),
+                        Text(
+                          ' / $defaultExerciseGoalMinutes min',
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      isComplete ? '🎉 Daily goal reached!' : 'Keep moving!',
+                      style: AppTypography.labelSmall.copyWith(
+                        color: isComplete ? AppColors.success : AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          // Today's exercises
+          exercisesAsync.when(
+            data: (exercises) {
+              if (exercises.isEmpty) return const SizedBox.shrink();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  Divider(color: AppColors.divider.withValues(alpha: 0.3)),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Today\'s Activity',
+                    style: AppTypography.labelSmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ...exercises.take(3).map((e) => _buildExerciseItem(e)),
+                ],
+              );
+            },
+            loading: () => const SizedBox.shrink(),
+            error: (_, __) => const SizedBox.shrink(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExerciseItem(Exercise exercise) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: AppColors.accent.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(
+              _getExerciseIcon(exercise.exerciseType),
+              color: AppColors.accent,
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              exercise.exerciseType,
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          Text(
+            '${exercise.durationMinutes} min',
+            style: AppTypography.labelSmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          if (exercise.caloriesBurned != null) ...[
+            const SizedBox(width: 8),
+            Text(
+              '${exercise.caloriesBurned} cal',
+              style: AppTypography.labelSmall.copyWith(
+                color: AppColors.warning,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  IconData _getExerciseIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'walking':
+        return Icons.directions_walk;
+      case 'running':
+        return Icons.directions_run;
+      case 'cycling':
+        return Icons.directions_bike;
+      case 'swimming':
+        return Icons.pool;
+      case 'yoga':
+        return Icons.self_improvement;
+      case 'strength':
+        return Icons.fitness_center;
+      case 'cardio':
+        return Icons.favorite;
+      case 'hiit':
+        return Icons.flash_on;
+      default:
+        return Icons.sports;
+    }
+  }
+
+  void _showLogExerciseSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _LogExerciseSheet(ref: ref),
+    );
+  }
+
   Widget _buildComingSoonCard(String title, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -308,5 +531,219 @@ class _QuickAddButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// Log exercise bottom sheet
+class _LogExerciseSheet extends ConsumerStatefulWidget {
+  final WidgetRef ref;
+
+  const _LogExerciseSheet({required this.ref});
+
+  @override
+  ConsumerState<_LogExerciseSheet> createState() => _LogExerciseSheetState();
+}
+
+class _LogExerciseSheetState extends ConsumerState<_LogExerciseSheet> {
+  String _selectedType = exerciseTypes.first;
+  int _duration = 30;
+  String _intensity = 'medium';
+  bool _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Handle bar
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.textSecondary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            Text(
+              'Log Exercise',
+              style: AppTypography.headlineMedium.copyWith(
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Exercise type
+            Text(
+              'Type',
+              style: AppTypography.labelLarge.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: exerciseTypes.map((type) {
+                final isSelected = _selectedType == type;
+                return ChoiceChip(
+                  label: Text(type),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    setState(() => _selectedType = type);
+                  },
+                  backgroundColor: AppColors.surfaceVariant,
+                  selectedColor: AppColors.accent,
+                  labelStyle: AppTypography.labelMedium.copyWith(
+                    color: isSelected ? Colors.white : AppColors.textSecondary,
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 24),
+
+            // Duration slider
+            Text(
+              'Duration: $_duration minutes',
+              style: AppTypography.labelLarge.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Slider(
+              value: _duration.toDouble(),
+              min: 5,
+              max: 120,
+              divisions: 23,
+              activeColor: AppColors.accent,
+              inactiveColor: AppColors.surfaceVariant,
+              onChanged: (value) => setState(() => _duration = value.toInt()),
+            ),
+            const SizedBox(height: 16),
+
+            // Intensity
+            Text(
+              'Intensity',
+              style: AppTypography.labelLarge.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: intensityLevels.map((level) {
+                final isSelected = _intensity == level;
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => _intensity = level),
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isSelected ? _getIntensityColor(level) : AppColors.surfaceVariant,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          level[0].toUpperCase() + level.substring(1),
+                          style: AppTypography.labelMedium.copyWith(
+                            color: isSelected ? Colors.white : AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 32),
+
+            // Log button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _logExercise,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.accent,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        'Log Exercise',
+                        style: AppTypography.labelLarge.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getIntensityColor(String intensity) {
+    switch (intensity) {
+      case 'low':
+        return AppColors.success;
+      case 'medium':
+        return AppColors.warning;
+      case 'high':
+        return AppColors.error;
+      default:
+        return AppColors.accent;
+    }
+  }
+
+  Future<void> _logExercise() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      final repository = ref.read(exerciseRepositoryProvider);
+      await repository.logExercise(
+        exerciseType: _selectedType,
+        durationMinutes: _duration,
+        intensity: _intensity,
+      );
+      
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to log exercise: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 }
