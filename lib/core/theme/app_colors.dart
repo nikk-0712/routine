@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// App color palette based on design doc
-/// Futuristic, dark-first design with neon highlights
+/// App color palette - Futuristic, dark-first design with neon highlights
 class AppColors {
   // Prevent instantiation
   AppColors._();

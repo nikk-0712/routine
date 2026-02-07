@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/database/app_database.dart';
 import '../../../core/database/tables/tasks_table.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
+import '../data/subtasks_repository.dart';
+import '../data/tags_repository.dart';
+import 'tag_chip.dart';
 
 /// Individual task card widget
-class TaskCard extends StatelessWidget {
+class TaskCard extends ConsumerWidget {
   final Task task;
   final VoidCallback? onComplete;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
+  final bool showTags;
 
   const TaskCard({
     super.key,
@@ -18,11 +23,14 @@ class TaskCard extends StatelessWidget {
     this.onComplete,
     this.onDelete,
     this.onEdit,
+    this.showTags = true,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isCompleted = task.status == TaskStatus.completed;
+    final subtasksAsync = ref.watch(subtasksForTaskProvider(task.id));
+    final tagsAsync = showTags ? ref.watch(taskTagsProvider(task.id)) : const AsyncValue<List<Tag>>.data([]);
 
     return Dismissible(
       key: ValueKey(task.id),
@@ -119,6 +127,24 @@ class TaskCard extends StatelessWidget {
                             ],
                           ],
                         ),
+                        
+                        // Tags
+                        if (showTags)
+                          tagsAsync.when(
+                            data: (tags) {
+                              if (tags.isEmpty) return const SizedBox.shrink();
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Wrap(
+                                  spacing: 4,
+                                  runSpacing: 4,
+                                  children: tags.map((tag) => TagChip(tag: tag)).toList(),
+                                ),
+                              );
+                            },
+                            loading: () => const SizedBox.shrink(),
+                            error: (_, __) => const SizedBox.shrink(),
+                          ),
                       ],
                     ),
                   ),

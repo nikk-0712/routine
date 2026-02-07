@@ -6,7 +6,9 @@ import '../../../core/database/tables/tasks_table.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../data/subtasks_repository.dart';
+import '../data/tags_repository.dart';
 import '../data/tasks_repository.dart';
+import 'tag_chip.dart';
 
 /// Task detail sheet with subtasks management
 class TaskDetailSheet extends ConsumerStatefulWidget {
@@ -32,6 +34,7 @@ class _TaskDetailSheetState extends ConsumerState<TaskDetailSheet> {
   @override
   Widget build(BuildContext context) {
     final subtasksAsync = ref.watch(subtasksForTaskProvider(widget.task.id));
+    final tagsAsync = ref.watch(taskTagsProvider(widget.task.id));
     final isCompleted = widget.task.status == TaskStatus.completed;
 
     return Container(
@@ -107,6 +110,48 @@ class _TaskDetailSheetState extends ConsumerState<TaskDetailSheet> {
                     ),
                   ),
                 ],
+                const SizedBox(height: 24),
+
+                // Tags section
+                Row(
+                  children: [
+                    Icon(Icons.label_outline, color: AppColors.primary, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Tags',
+                      style: AppTypography.labelLarge.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                tagsAsync.when(
+                  data: (tags) {
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ...tags.map((tag) => TagChip(
+                              tag: tag,
+                              onDelete: () => _removeTag(tag.id),
+                            )),
+                        if (!isCompleted)
+                          ActionChip(
+                            label: const Icon(Icons.add, size: 16),
+                            onPressed: () => _showAddTagSheet(context),
+                            backgroundColor: AppColors.surfaceVariant,
+                            side: BorderSide.none,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, __) => const SizedBox.shrink(),
+                ),
                 const SizedBox(height: 24),
 
                 // Subtasks section
@@ -336,5 +381,242 @@ class _TaskDetailSheetState extends ConsumerState<TaskDetailSheet> {
     final repository = ref.read(tasksRepositoryProvider);
     await repository.completeTask(widget.task.id);
     if (mounted) Navigator.of(context).pop();
+  }
+
+  Future<void> _removeTag(String tagId) async {
+    final repository = ref.read(tagsRepositoryProvider);
+    await repository.removeTagFromTask(widget.task.id, tagId);
+  }
+
+  void _showAddTagSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => _AddTagSheet(
+        taskId: widget.task.id,
+      ),
+    );
+  }
+}
+
+class _AddTagSheet extends ConsumerStatefulWidget {
+  final String taskId;
+
+  const _AddTagSheet({required this.taskId});
+
+  @override
+  ConsumerState<_AddTagSheet> createState() => _AddTagSheetState();
+}
+
+class _AddTagSheetState extends ConsumerState<_AddTagSheet> {
+  final _tagController = TextEditingController();
+  final List<Color> _colors = [
+    AppColors.primary,
+    AppColors.secondary,
+    AppColors.accent,
+    AppColors.success,
+    AppColors.warning,
+    AppColors.error,
+    AppColors.info,
+    Colors.purple,
+    Colors.teal,
+    Colors.orange,
+  ];
+  late Color _selectedColor;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedColor = _colors[0];
+  }
+
+  @override
+  void dispose() {
+    _tagController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final allTagsAsync = ref.watch(allTagsProvider);
+    final taskTagsAsync = ref.watch(taskTagsProvider(widget.taskId));
+
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Manage Tags',
+              style: AppTypography.headlineSmall.copyWith(
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Existing tags
+            allTagsAsync.when(
+              data: (allTags) {
+                return taskTagsAsync.when(
+                  data: (taskTags) {
+                    final taskTagIds = taskTags.map((t) => t.id).toSet();
+                    
+                    if (allTags.isEmpty) {
+                      return Text(
+                        'No tags created yet',
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      );
+                    }
+
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: allTags.map((tag) {
+                        final isSelected = taskTagIds.contains(tag.id);
+                        return FilterChip(
+                          label: Text(tag.name),
+                          selected: isSelected,
+                          onSelected: (selected) => _toggleTag(tag.id, selected),
+                          backgroundColor: AppColors.surfaceVariant,
+                          selectedColor: Color(tag.color).withValues(alpha: 0.3),
+                          checkmarkColor: Color(tag.color),
+                          labelStyle: AppTypography.labelMedium.copyWith(
+                            color: isSelected ? Color(tag.color) : AppColors.textPrimary,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: BorderSide(
+                              color: isSelected ? Color(tag.color) : Colors.transparent,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                  loading: () => const LinearProgressIndicator(),
+                  error: (_, __) => const SizedBox.shrink(),
+                );
+              },
+              loading: () => const LinearProgressIndicator(),
+              error: (_, __) => const SizedBox.shrink(),
+            ),
+
+            const SizedBox(height: 24),
+            const Divider(color: AppColors.divider),
+            const SizedBox(height: 24),
+
+            // Create new tag
+            Text(
+              'Create New Tag',
+              style: AppTypography.labelLarge.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _tagController,
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Tag name...',
+                      hintStyle: AppTypography.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      filled: true,
+                      fillColor: AppColors.surfaceVariant,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    color: _selectedColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: PopupMenuButton<Color>(
+                    icon: const Icon(Icons.palette, color: Colors.white),
+                    onSelected: (color) => setState(() => _selectedColor = color),
+                    itemBuilder: (context) => _colors.map((color) {
+                      return PopupMenuItem(
+                         value: color,
+                         child: Row(
+                           children: [
+                             Container(
+                               width: 24,
+                               height: 24,
+                               decoration: BoxDecoration(
+                                 color: color,
+                                 shape: BoxShape.circle,
+                               ),
+                             ),
+                             const SizedBox(width: 12),
+                             Text(
+                               'Color',
+                               style: TextStyle(color: color),
+                             ),
+                           ],
+                         ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: _createTag,
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.add, color: Colors.white),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _toggleTag(String tagId, bool selected) async {
+    final repository = ref.read(tagsRepositoryProvider);
+    if (selected) {
+      await repository.addTagToTask(widget.taskId, tagId);
+    } else {
+      await repository.removeTagFromTask(widget.taskId, tagId);
+    }
+  }
+
+  Future<void> _createTag() async {
+    final name = _tagController.text.trim();
+    if (name.isEmpty) return;
+    
+    final repository = ref.read(tagsRepositoryProvider);
+    // ignore: deprecated_member_use
+    await repository.createTag(name, _selectedColor.value);
+    
+    _tagController.clear();
   }
 }

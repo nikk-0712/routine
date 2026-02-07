@@ -10,16 +10,18 @@ A modern, offline-first personal productivity app built with Flutter. Manage tas
 
 ### 📋 Task Management
 - Create, edit, and complete tasks
+- **Subtasks & Checklists** for breaking down complex items
 - Priority levels (Low, Medium, High, Urgent)
 - Category organization (Personal, Study, Work, Health)
 - Due date tracking with overdue indicators
-- Swipe-to-delete functionality
+- Delete confirmation safety
+- Search and filtering (coming soon)
 
-### 💧 Hydration Tracking
-- Daily water intake monitoring
-- Quick-add buttons (+1 glass, +2 glasses, bottle)
-- Customizable daily goal (6-12 glasses)
-- Progress ring visualization
+### ❤️ Health & Wellness
+- **Hydration**: Track daily water intake (with quick-add)
+- **Exercise**: Log workout type, duration, and intensity
+- **Sleep**: Record sleep duration and quality
+- **Progress Rings**: Visual daily goals for all metrics
 
 ### 📊 Insights & Analytics
 - Weekly task completion bar chart

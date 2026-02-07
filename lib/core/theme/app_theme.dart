@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 import 'app_typography.dart';
 
-/// Main app theme configuration
-/// Dark-first design with neon highlights
+/// Main app theme - Dark-first design with neon highlights
 class AppTheme {
   // Prevent instantiation
   AppTheme._();

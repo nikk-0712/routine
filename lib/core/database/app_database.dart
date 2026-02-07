@@ -10,16 +10,17 @@ import 'tables/water_intakes_table.dart';
 import 'tables/exercises_table.dart';
 import 'tables/sleep_logs_table.dart';
 import 'tables/subtasks_table.dart';
+import 'tables/tags_table.dart';
 
 part 'app_database.g.dart';
 
 /// Main application database
-@DriftDatabase(tables: [Tasks, WaterIntakes, Exercises, SleepLogs, Subtasks])
+@DriftDatabase(tables: [Tasks, WaterIntakes, Exercises, SleepLogs, Subtasks, Tags, TaskTags])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -39,6 +40,10 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 5) {
           await m.createTable(subtasks);
+        }
+        if (from < 6) {
+          await m.createTable(tags);
+          await m.createTable(taskTags);
         }
       },
     );
@@ -381,6 +386,65 @@ class AppDatabase extends _$AppDatabase {
     final subs = await getSubtasksForTask(parentTaskId);
     final completed = subs.where((s) => s.isCompleted).length;
     return (total: subs.length, completed: completed);
+  }
+
+  // ===== Tag Operations =====
+
+  /// Create a new tag
+  Future<int> createTag(TagsCompanion tag) {
+    return into(tags).insert(tag);
+  }
+
+  /// Get all tags
+  Future<List<Tag>> getAllTags() {
+    return select(tags).get();
+  }
+  
+  /// Watch all tags
+  Stream<List<Tag>> watchAllTags() {
+    return select(tags).watch();
+  }
+
+  /// Delete a tag
+  Future<int> deleteTag(String id) {
+    return (delete(tags)..where((t) => t.id.equals(id))).go();
+  }
+
+  /// Assign a tag to a task
+  Future<int> addTagToTask(String taskId, String tagId) {
+    return into(taskTags).insert(
+      TaskTagsCompanion(
+        taskId: Value(taskId),
+        tagId: Value(tagId),
+      ),
+    );
+  }
+
+  /// Remove a tag from a task
+  Future<int> removeTagFromTask(String taskId, String tagId) {
+    return (delete(taskTags)
+          ..where((t) => t.taskId.equals(taskId) & t.tagId.equals(tagId)))
+        .go();
+  }
+
+  /// Get tags for a task
+  Future<List<Tag>> getTagsForTask(String taskId) {
+    final query = select(tags).join([
+      innerJoin(taskTags, taskTags.tagId.equalsExp(tags.id)),
+    ])
+      ..where(taskTags.taskId.equals(taskId));
+
+    return query.map((row) => row.readTable(tags)).get();
+  }
+
+  /// Watch tags for a task
+  Stream<List<Tag>> watchTagsForTask(String taskId) {
+    final query = select(tags).join([
+      innerJoin(taskTags, taskTags.tagId.equalsExp(tags.id)),
+    ])
+      ..where(taskTags.taskId.equals(taskId));
+
+    return query.map((row) => row.readTable(tags)).watch();
   }
 }
 

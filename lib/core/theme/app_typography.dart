@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// App typography based on design doc
-/// Modern sans-serif with bold numerals and subdued labels
+/// App typography - Modern sans-serif with bold numerals and subdued labels
 class AppTypography {
   // Prevent instantiation
   AppTypography._();
