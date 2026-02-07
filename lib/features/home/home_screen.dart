@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/database/tables/tasks_table.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../health/data/hydration_repository.dart';
 import '../tasks/data/tasks_repository.dart';
 
 /// Home dashboard screen - main entry point of the app
@@ -13,6 +14,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tasksAsync = ref.watch(allTasksProvider);
+    final waterMlAsync = ref.watch(todaysWaterIntakeProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -31,9 +33,13 @@ class HomeScreen extends ConsumerWidget {
                 loading: () => _buildStatsRowLoading(),
                 error: (_, __) => _buildStatsRowError(),
               ),
+              const SizedBox(height: 16),
+
+              // Hydration Card
+              _buildHydrationCard(context, ref, waterMlAsync),
               const SizedBox(height: 24),
 
-              // Today's Progress
+              // Today's Focus
               Text(
                 "Today's Focus",
                 style: AppTypography.headlineSmall.copyWith(
@@ -224,6 +230,123 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildHydrationCard(
+    BuildContext context,
+    WidgetRef ref,
+    AsyncValue<int> waterMlAsync,
+  ) {
+    final ml = waterMlAsync.whenOrNull(data: (ml) => ml) ?? 0;
+    final glasses = (ml / glassSize).floor();
+    final goalGlasses = defaultDailyWaterGoalMl ~/ glassSize;
+    final progress = (ml / defaultDailyWaterGoalMl).clamp(0.0, 1.0);
+    final isComplete = ml >= defaultDailyWaterGoalMl;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.secondary.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Mini progress ring
+          SizedBox(
+            width: 56,
+            height: 56,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                CircularProgressIndicator(
+                  value: progress,
+                  strokeWidth: 5,
+                  backgroundColor: AppColors.surface,
+                  color: isComplete ? AppColors.success : AppColors.secondary,
+                  strokeCap: StrokeCap.round,
+                ),
+                Icon(
+                  isComplete ? Icons.check : Icons.water_drop,
+                  color: isComplete ? AppColors.success : AppColors.secondary,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+
+          // Text info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Hydration',
+                  style: AppTypography.labelMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Text(
+                      '$glasses',
+                      style: AppTypography.metricSmall.copyWith(
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                    Text(
+                      ' / $goalGlasses glasses',
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Quick add button
+          Material(
+            color: AppColors.secondary.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(12),
+            child: InkWell(
+              onTap: () => _logWater(ref),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.add,
+                      color: AppColors.secondary,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '1 Glass',
+                      style: AppTypography.labelMedium.copyWith(
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _logWater(WidgetRef ref) async {
+    final repository = ref.read(hydrationRepositoryProvider);
+    await repository.logGlass();
   }
 
   Widget _buildTodaysTasks(List<dynamic> allTasks) {
